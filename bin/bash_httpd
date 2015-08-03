@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -e
+
+mkdir -p log
+
+# All the credit for this goes to the question and answers from this SO question
+# http://stackoverflow.com/questions/16640054/minimal-web-server-using-netcat
+x=0
+LOG=$( echo -n "["$(date "+%F %T %Z")"] $REMOTE_HOST ")$(
+    while read I[$x] && [ ${#I[$x]} -gt 1 ]
+    do
+        echo -n '"'${I[$x]} | sed -e's,.$,",'
+        let "x = $x + 1"
+    done
+   )
+echo $LOG >> log/bash_httpd
+
+BODY=$(echo -en '<html>Sample html</html>')
+echo -en "HTTP/1.0 200 OK\nContent-Type: text/html\nContent-Length: ${#BODY}\n\n$BODY"
